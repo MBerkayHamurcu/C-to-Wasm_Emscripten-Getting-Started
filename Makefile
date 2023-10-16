@@ -1,0 +1,73 @@
+CC=emcc
+CFLAGS= \
+-Wall \
+-Wextra \
+-Wpedantic \
+-sASSERTIONS=0 \
+-sSAFE_HEAP=0 \
+-sSTRICT=1 \
+-sSUPPORT_ERRNO=0 \
+-sENVIRONMENT='web' \
+-sDYNAMIC_EXECUTION=0 \
+-sINVOKE_RUN=0 \
+-sMINIMAL_RUNTIME_STREAMING_WASM_COMPILATION=0 \
+-sMINIMAL_RUNTIME=0 \
+-sEXIT_RUNTIME=0 \
+-sMODULARIZE=1 \
+-sEXPORT_ES6=1 \
+-sSTACK_OVERFLOW_CHECK=0 \
+-sMEMORY64=0 \
+-sWASM_BIGINT=0 \
+-sMALLOC='dlmalloc' \
+-sFILESYSTEM=0 \
+-sINITIAL_MEMORY=16777216 \
+-sMAXIMUM_MEMORY=1073741824 \
+-sSTACK_SIZE=1024kb \
+-sALLOW_MEMORY_GROWTH=1 \
+-sMEMORY_GROWTH_GEOMETRIC_STEP=1.0 \
+-sMEMORY_GROWTH_GEOMETRIC_CAP=128mb \
+-sVERBOSE=1 \
+-sEMIT_PRODUCERS_SECTION=0 \
+-sEMIT_EMSCRIPTEN_LICENSE=0 \
+
+STATIC_INPUT=./src/staticWasmModule.c
+STATIC_OUTPUT=./1-CallingCFunctions/wasm/staticWasmModule.js
+STATIC_CFLAGS= \
+-sEXPORT_NAME="staticWasmModuleExport" \
+-sINCOMING_MODULE_JS_API='[]' \
+-sEXPORTED_RUNTIME_METHODS="[ccall, cwrap, UTF8ToString, stringToUTF8]" \
+-sEXPORTED_FUNCTIONS='[ \
+"_cFunction1", \
+"_cFunction2", \
+"_cFunction3", \
+"_malloc", \
+"_free" \
+]'
+
+DYNAMIC_INPUT=./src/dynamicWasmModule.c
+DYNAMIC_OUTPUT=./1-CallingCFunctions/wasm/dynamicWasmModule.wasm
+DYNAMIC_CFLAGS= \
+-sMINIMAL_RUNTIME_STREAMING_WASM_COMPILATION=1 \
+-sSIDE_MODULE=2 \
+-sEXPORT_NAME="dynamicWasmModuleExport" \
+-sINCOMING_MODULE_JS_API='[]' \
+-sEXPORTED_RUNTIME_METHODS="[]" \
+-sEXPORTED_FUNCTIONS='["_cFunction4"]'
+
+CMAIN_INPUT=./src/cMain/cMain.c
+CMAIN_MODULES=./src/cMain/modules/*
+CMAIN_OUTPUT=./2-RunningCMain/wasm/cMain.js
+CMAIN_FLAGS=\
+-sEXPORT_NAME="wasmModuleExport" \
+-sEXPORTED_RUNTIME_METHODS="[callMain]"
+
+OPT=-O3
+
+staticWasmModule: $(STATIC_INPUT)
+	$(CC) $(STATIC_INPUT) $(CFLAGS) $(STATIC_CFLAGS) $(OPT) -o $(STATIC_OUTPUT)
+
+dynamicWasmModule: $(DYNAMIC_INPUT)
+	$(CC) $(DYNAMIC_INPUT) $(CFLAGS) $(DYNAMIC_CFLAGS) $(OPT) -o $(DYNAMIC_OUTPUT)
+
+cMain: $(CMAIN_INPUT) $(CMAIN_MODULES)
+	$(CC) $(CMAIN_INPUT) $(CFLAGS) $(CMAIN_FLAGS) $(OPT) -o $(CMAIN_OUTPUT)

@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  emscripten:
+    image: emscripten/emsdk
+    container_name: emscripten
+    volumes:
+      - ./:/mnt/c-to-Wasm-Mount
+    working_dir: /mnt/c-to-Wasm-Mount
+    command: sh -c "umask 002 && echo nowRunningEmscripten && exec sh"
+    stdin_open: true
+    tty: true
+
+  node:
+    image: node:20-alpine3.18
+    container_name: node-webServer
+    volumes:
+      - ./:/mnt/c-to-Wasm-Mount
+    working_dir: /mnt/c-to-Wasm-Mount
+    ports:
+      - 127.0.0.1:7071:7071
+      - 127.0.0.1:7072:7072
+    command: sh -c "npm install http-server pm2 -g && pm2 start 'http-server ./1-CallingCFunctions --port 7071 --cors -c-1 -d false' && pm2 start 'http-server ./2-RunningCMain --port 7072 --cors -c-1 -d false' && exec sh"
+    stdin_open: true
+    tty: true

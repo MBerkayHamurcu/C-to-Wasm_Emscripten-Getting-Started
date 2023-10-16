@@ -1,0 +1,10 @@
+node_modules
+package.json
+npm-debug.log
+rome.json
+pnpm-lock.yaml
+.clang-format
+
+.env
+.vscode
+*.dtmp

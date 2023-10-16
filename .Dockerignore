@@ -1,0 +1,14 @@
+**/*.md
+**/*.dtmp
+
+node_modules/
+npm-debug.log
+package.json
+pnpm-lock.yaml
+rome.json
+.clang-format
+.vscode
+
+.git
+.gitignore
+.gitattributes
