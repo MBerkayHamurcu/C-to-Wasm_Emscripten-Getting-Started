@@ -4,13 +4,6 @@
 * text=auto
 
 ###############################################################################
-# Behavior for Wasm files
-#
-# Treat Wasm files as binary
-###############################################################################
-*.wasm filter=lfs diff=lfs merge=lfs -text 
-
-###############################################################################
 # Behavior for image files
 #
 # Image files are treated as binary by default
